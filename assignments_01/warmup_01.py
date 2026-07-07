@@ -262,3 +262,85 @@ print(
     "so the difference is unlikely to be due to chance."
 )
 
+# --- Correlation ---
+
+# Correlation Q1
+x = [1, 2, 3, 4, 5]
+y = [2, 4, 6, 8, 10]
+corr_matrix = np.corrcoef(x, y)
+print("Correlation matrix:")
+print(corr_matrix)
+print(f"Correlation coefficient: {corr_matrix[0, 1]:.3f}")
+
+# I expect the correlation to be 1 because y increases as x increases. This is a positive correlation.
+
+# Correlation Q2
+from scipy.stats import pearsonr
+
+x = [1,  2,  3,  4,  5,  6,  7,  8,  9, 10]
+y = [10, 9,  7,  8,  6,  5,  3,  4,  2,  1]
+
+r, p = pearsonr(x,y)
+print(f"Correlation coefficient: {r:.2f}")
+print(f"P-value: {p}")
+
+# Correlation Q3
+people = {
+    "height": [160, 165, 170, 175, 180],
+    "weight": [55,  60,  65,  72,  80],
+    "age":    [25,  30,  22,  35,  28]
+}
+df = pd.DataFrame(people)
+print("Correlation matrix:")
+corr_matrix = df.corr()
+print(corr_matrix)
+
+# Correlation Q4
+x = [10, 20, 30, 40, 50]
+y = [90, 75, 60, 45, 30]
+plt.scatter(x, y, color="green")
+plt.title("Negative Correlation")
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.show()
+
+# Correlation Q5
+import seaborn as sns
+sns.heatmap(corr_matrix, annot=True)
+plt.title("Correlation Heatmap")
+plt.show()
+
+# --- Pipelines---
+
+# Pipeline Q1
+arr = np.array([12.0, 15.0, np.nan, 14.0, 10.0, np.nan, 18.0, 14.0, 16.0, 22.0, np.nan, 13.0])
+
+# Function takes a NumPy array and returns a pandas Series with the name "values".
+def create_series(arr):
+    return pd.Series(arr, name="values")
+
+# Function takes the Series, removes any NaN values using .dropna(), and returns the cleaned Series.
+def clean_data(series):
+    return series.dropna()
+
+# Function takes the cleaned Series and returns a dictionary with four keys.
+def summarize_data(series):
+    return {
+        "mean": series.mean(),
+        "median": series.median(),
+        "std": series.std(),
+        "mode": series.mode()[0]
+    }
+
+# Function calls the three functions above in sequence and returns the summary dictionary.
+def data_pipeline(arr):
+    series = create_series(arr)
+    cleaned_series = clean_data(series)
+    summary = summarize_data(cleaned_series)
+    return summary
+
+result = data_pipeline(arr)
+
+for key, value in result.items():
+    print(f"{key}: {value}")
+    

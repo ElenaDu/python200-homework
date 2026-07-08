@@ -268,8 +268,7 @@ print(
 x = [1, 2, 3, 4, 5]
 y = [2, 4, 6, 8, 10]
 corr_matrix = np.corrcoef(x, y)
-print("Correlation matrix:")
-print(corr_matrix)
+print(f"Correlation matrix:\n{corr_matrix}")
 print(f"Correlation coefficient: {corr_matrix[0, 1]:.3f}")
 
 # I expect the correlation to be 1 because y increases as x increases. This is a positive correlation.
@@ -291,9 +290,8 @@ people = {
     "age":    [25,  30,  22,  35,  28]
 }
 df = pd.DataFrame(people)
-print("Correlation matrix:")
 corr_matrix = df.corr()
-print(corr_matrix)
+print(f"Correlation matrix:\n{corr_matrix}")
 
 # Correlation Q4
 x = [10, 20, 30, 40, 50]

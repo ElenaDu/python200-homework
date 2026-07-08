@@ -229,9 +229,33 @@ def correlation_multiple(df):
             logger.info("Correlation is not statistically significant after the Bonferroni correction")
     
         
+#Task 6: Summary Report
+@task
+def summary_report(df):
+    logger = get_run_logger()
+
+    #Total number of countries and years in the merged dataset.
+    number_of_countries = df["Country"].nunique()
+    number_of_years = df["Year"].nunique()
+
+    logger.info(f"The merged dataset contains data for {number_of_countries} countries across {number_of_years} years.")
+
+    #The top 3 and bottom 3 regions by mean happiness score.
+    regional_means = df.groupby("Regional indicator")["Happiness score"].mean()
+    top_3_regions = regional_means.sort_values(ascending=False).head(3)
+    bottom_3_regions = regional_means.sort_values().head(3)
+
+    logger.info(f"Top 3 regions by average happiness score:\n{top_3_regions.round(2).to_string()}")
     
+    logger.info(f"Bottom 3 regions by average happiness score:\n{bottom_3_regions.round(2).to_string()}")
+
+    #The result of the pre/post-2020 t-test in plain language.
+    logger.info("There was no statistically significant difference in average happiness scores between 2019 and 2020."
+     "Based on this dataset, we do not have enough evidence to conclude that the pandemic changed global happiness scores during that period.")
     
-   
+
+    #The variable most strongly correlated with happiness score (after Bonferroni correction).   
+    logger.info("Social support had the strongest positive correlation with happiness score (r = 0.7439) and remained statistically significant after the Bonferroni correction.")
 
 
 
@@ -242,6 +266,7 @@ def happiness_pipeline():
     visual_exploration(df)
     hypothesis_testing(df)
     correlation_multiple(df)
+    summary_report(df)
 
            
 if __name__ == "__main__":

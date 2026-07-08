@@ -12,6 +12,7 @@ from scipy.stats import ttest_ind, pearsonr
 def load_data():
     logger = get_run_logger()
 
+    #I used ChatGPT to discuss os.path, troubleshoot errors related to os.path, and help find solutions that worked with my code.
     current_folder = os.path.dirname(__file__)
     data_folder = os.path.join(current_folder, "happiness_project")
     output_folder = os.path.join(current_folder, "outputs")

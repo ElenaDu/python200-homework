@@ -85,8 +85,8 @@ y = [0, 1, 4, 9, 16, 25]
 
 plt.plot(x,y)
 plt.title("Squares")
-plt.xlabel("X")
-plt.ylabel("Y")
+plt.xlabel("x")
+plt.ylabel("y")
 plt.show()
 
 # Matplotlib Q2
@@ -105,8 +105,8 @@ x2, y2 = [1, 2, 3, 4, 5], [5, 4, 3, 2, 1]
 
 plt.scatter(x1, y1, color="green", label="Dataset 1")
 plt.scatter(x2, y2, color="red", label="Dataset 2")
-plt.xlabel("X")
-plt.ylabel("Y")
+plt.xlabel("x")
+plt.ylabel("y")
 plt.legend()
 plt.show()
 

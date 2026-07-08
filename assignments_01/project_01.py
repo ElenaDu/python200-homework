@@ -5,6 +5,7 @@ from prefect import task, flow
 from prefect.logging import get_run_logger
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy.stats import ttest_ind
 
 #Task 1: Load Multiple Years of Data
 @task(retries=3, retry_delay_seconds=2)
@@ -111,12 +112,54 @@ def visual_exploration(df):
     plt.close()
 
     logger.info("Saved gdp_vs_happiness.png")
+
+    #Correlation heatmap showing the Pearson correlations between all numeric columns.
+    plt.figure(figsize=(10, 8))
+
+    correlation_matrix = df.corr(numeric_only=True)
+    sns.heatmap(correlation_matrix, annot=True, fmt=".2f")
+
+    plt.title("Correlation Heatmap")
+    plt.tight_layout()
+
+    plt.savefig(os.path.join(output_folder, "correlation_heatmap.png"))
+    plt.close()
+
+    logger.info("Saved correlation_heatmap.png")
     
     
+#Task 4: Hypothesis Testing
+@task
+def hypothesis_testing(df):
+    logger = get_run_logger()
+
+    happiness_2019 = df[df["Year"] == 2019]["Happiness score"]
+    happiness_2020 = df[df["Year"] == 2020]["Happiness score"]
+
+    t_statistic, p_value = ttest_ind(happiness_2019, happiness_2020)
+
+    mean_2019 = happiness_2019.mean()
+    mean_2020 = happiness_2020.mean()
+
+    logger.info(f"Mean happiness score (2019): {mean_2019:.2f}")
+    logger.info(f"Mean happiness score (2020): {mean_2020:.2f}")
+
+    logger.info(f"T-statistic: {t_statistic:.4f}")
+    logger.info(f"P-value: {p_value:.4f}")
+
+    if p_value < 0.05:
+        logger.info("There is a statistically significant difference in the average happiness scores between 2019 and 2020."
+                    "Based on this dataset, there is evidence that average happiness scores changed between these two years.")
+    else:
+        logger.info("There is no statistically significant difference in the average happiness scores between 2019 and 2020."
+                    "Based on this dataset, we do not have enough evidence to conclude that the pandemic changed global happiness scores during that period.")
+        
+
     
-
-
-
+        
+        
+    
+   
 
 
 
@@ -125,6 +168,7 @@ def happiness_pipeline():
     df = load_data()
     descriptive_statistics(df)
     visual_exploration(df)
+    hypothesis_testing(df)
 
            
 if __name__ == "__main__":

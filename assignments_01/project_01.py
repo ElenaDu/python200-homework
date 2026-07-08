@@ -133,6 +133,8 @@ def visual_exploration(df):
 def hypothesis_testing(df):
     logger = get_run_logger()
 
+    #Run an independent samples t-test comparing happiness scores from 2019 to 2020.
+
     happiness_2019 = df[df["Year"] == 2019]["Happiness score"]
     happiness_2020 = df[df["Year"] == 2020]["Happiness score"]
 
@@ -154,10 +156,39 @@ def hypothesis_testing(df):
         logger.info("There is no statistically significant difference in the average happiness scores between 2019 and 2020."
                     "Based on this dataset, we do not have enough evidence to conclude that the pandemic changed global happiness scores during that period.")
         
+    
 
+    #Run an independent samples t-test comparing happiness scores in North America and ANZ vs Central and Eastern Europe
+
+    north_america_anz = df[df["Regional indicator"] == "North America and ANZ"]["Happiness score"]
+    central_eastern_europe = df[df["Regional indicator"] == "Central and Eastern Europe"]["Happiness score"]
+
+    t_statistic_regions, p_value_regions = ttest_ind(north_america_anz, central_eastern_europe)
+    
+    mean_north_america = north_america_anz.mean()
+    mean_central_eastern_europe = central_eastern_europe.mean()
+
+    logger.info(f"Mean happiness score (North America and ANZ): {mean_north_america:.2f}")
+    logger.info(f"Mean happiness score (Central and Eastern Europe): {mean_central_eastern_europe:.2f}")
+
+    logger.info(f"T-statistic (regions): {t_statistic_regions:.4f}")
+    logger.info(f"P-value (regions): {p_value_regions:.4f}")
+
+    if p_value_regions < 0.05:
+        
+        logger.info("There is a statistically significant difference in the average happiness scores between North America and ANZ and Central and Eastern Europe. "
+        "Based on this dataset, there is evidence that average happiness scores differ between these two regions.")
+    
+    else:
+        
+        logger.info("There is no statistically significant difference in the average happiness scores between North America and ANZ and Central and Eastern Europe."
+                    "Based on this dataset, we do not have enough evidence to conclude that the average happiness scores differ between these two regions.")
+    
     
         
         
+#Task 5: Correlation and Multiple Comparisons
+
     
    
 

@@ -5,7 +5,7 @@ from prefect import task, flow
 from prefect.logging import get_run_logger
 import matplotlib.pyplot as plt
 import seaborn as sns
-from scipy.stats import ttest_ind
+from scipy.stats import ttest_ind, pearsonr
 
 #Task 1: Load Multiple Years of Data
 @task(retries=3, retry_delay_seconds=2)
@@ -33,6 +33,8 @@ def load_data():
     
     # Merge all years into one DataFrame
     merged_df = pd.concat(all_data, ignore_index=True)
+
+    logger.info(f"\n{merged_df.isna().sum()}")
 
     # Save merged dataset
     merged_df.to_csv(
@@ -188,7 +190,46 @@ def hypothesis_testing(df):
         
         
 #Task 5: Correlation and Multiple Comparisons
+@task
+def correlation_multiple(df):
+    logger = get_run_logger()
 
+    variables = df.select_dtypes(include="number").columns.tolist()
+    variables.remove("Happiness score")
+    variables.remove("Year")
+    variables.remove("Ranking")
+
+    number_of_tests = len(variables)
+    adjusted_alpha = 0.05 / number_of_tests #Bonferroni correction
+    logger.info(f"Number of correlation tests: {number_of_tests}")
+    logger.info(f"Bonferroni adjusted alpha: {adjusted_alpha:.4f}")
+
+    for variable in variables:
+        logger.info(f"Starting correlation for {variable}")
+
+        temp_df = df[[variable, "Happiness score"]]
+        if temp_df.isna().values.any():
+            logger.info(f"Missing values found for {variable}. Dropping missing rows.")
+            temp_df = temp_df.dropna()
+
+        correlation, p_value = pearsonr(temp_df[variable],  temp_df["Happiness score"])
+
+        logger.info(f"Variable: {variable}")
+        logger.info(f"Correlation coefficient: {correlation:.4f}")
+        logger.info(f"P-value: {p_value:.4f}")
+
+        if p_value < 0.05:
+            logger.info("Correlation is statistically significant at alpha = 0.05")
+        else:
+            logger.info("Correlation is not statistically significant at alpha = 0.05")
+        
+        if p_value < adjusted_alpha:
+            logger.info("Correlation remains statistically significant after the Bonferroni correction")
+        else:
+            logger.info("Correlation is not statistically significant after the Bonferroni correction")
+    
+        
+    
     
    
 
@@ -200,6 +241,7 @@ def happiness_pipeline():
     descriptive_statistics(df)
     visual_exploration(df)
     hypothesis_testing(df)
+    correlation_multiple(df)
 
            
 if __name__ == "__main__":

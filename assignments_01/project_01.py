@@ -205,6 +205,9 @@ def correlation_multiple(df):
     logger.info(f"Number of correlation tests: {number_of_tests}")
     logger.info(f"Bonferroni adjusted alpha: {adjusted_alpha:.4f}")
 
+    strongest_variable = None
+    strongest_correlation = 0
+
     for variable in variables:
         logger.info(f"Starting correlation for {variable}")
 
@@ -226,13 +229,19 @@ def correlation_multiple(df):
         
         if p_value < adjusted_alpha:
             logger.info("Correlation remains statistically significant after the Bonferroni correction")
+
+            if abs(correlation) > abs(strongest_correlation):
+                strongest_variable = variable
+                strongest_correlation = correlation
+
         else:
             logger.info("Correlation is not statistically significant after the Bonferroni correction")
-    
+
+    return strongest_variable, strongest_correlation
         
 #Task 6: Summary Report
 @task
-def summary_report(df):
+def summary_report(df, strongest_variable, strongest_correlation):
     logger = get_run_logger()
 
     #Total number of countries and years in the merged dataset.
@@ -254,10 +263,10 @@ def summary_report(df):
     logger.info("There was no statistically significant difference in average happiness scores between 2019 and 2020."
      "Based on this dataset, we do not have enough evidence to conclude that the pandemic changed global happiness scores during that period.")
     
+    # The variable most strongly correlated with happiness score (after Bonferroni correction).
 
-    #The variable most strongly correlated with happiness score (after Bonferroni correction).   
-    logger.info("Social support had the strongest positive correlation with happiness score (r = 0.7439) and remained statistically significant after the Bonferroni correction.")
-
+    logger.info(f"{strongest_variable} had the strongest positive correlation with happiness score "
+                f"(r = {strongest_correlation:.4f}) and remained statistically significant after the Bonferroni correction.")
 
 
 @flow
@@ -266,8 +275,8 @@ def happiness_pipeline():
     descriptive_statistics(df)
     visual_exploration(df)
     hypothesis_testing(df)
-    correlation_multiple(df)
-    summary_report(df)
+    strongest_variable, strongest_correlation = correlation_multiple(df)
+    summary_report(df, strongest_variable, strongest_correlation)
 
            
 if __name__ == "__main__":

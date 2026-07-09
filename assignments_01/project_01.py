@@ -264,9 +264,9 @@ def summary_report(df, strongest_variable, strongest_correlation):
      "Based on this dataset, we do not have enough evidence to conclude that the pandemic changed global happiness scores during that period.")
     
     # The variable most strongly correlated with happiness score (after Bonferroni correction).
+    logger.info(f"{strongest_variable} had the strongest statistically significant correlation with happiness score "
+    f"(r = {strongest_correlation:.4f}) after the Bonferroni correction.")
 
-    logger.info(f"{strongest_variable} had the strongest positive correlation with happiness score "
-                f"(r = {strongest_correlation:.4f}) and remained statistically significant after the Bonferroni correction.")
 
 
 @flow

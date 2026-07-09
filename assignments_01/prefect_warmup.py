@@ -33,10 +33,8 @@ def pipeline_flow():
     return summary
 
 if __name__ == "__main__":
-    result = pipeline_flow()
+    pipeline_flow()
 
-    for key, value in result.items():
-        print(f"{key}: {value}")
 
 
 

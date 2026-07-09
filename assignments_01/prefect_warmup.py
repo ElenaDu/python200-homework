@@ -30,14 +30,14 @@ def pipeline_flow():
     series = create_series(arr)
     cleaned_series = clean_data(series)
     summary = summarize_data(cleaned_series)
-
-    for key, value in summary.items():
-        print(f"{key}: {value}")
-
     return summary
 
 if __name__ == "__main__":
-    pipeline_flow()
+    result = pipeline_flow()
+
+    for key, value in result.items():
+        print(f"{key}: {value}")
+
 
 
 # Questions:

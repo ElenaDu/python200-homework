@@ -68,3 +68,62 @@ plt.legend()
 plt.savefig("outputs/kmeans_clusters.png")
 plt.show()
 
+
+# --- Linear Regression --- 
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+
+np.random.seed(42)
+num_patients = 100
+age    = np.random.randint(20, 65, num_patients).astype(float)
+smoker = np.random.randint(0, 2, num_patients).astype(float)
+cost   = 200 * age + 15000 * smoker + np.random.normal(0, 3000, num_patients)
+
+# LR Q1
+plt.scatter(age, cost, c=smoker, cmap="coolwarm")
+plt.title("Medical Cost vs Age")
+plt.xlabel("Age")
+plt.ylabel("Medical Cost")
+plt.savefig("outputs/cost_vs_age.png")
+plt.show()
+
+# The scatter plot shows two distinct groups. The upper group represents smokers, who generally have higher medical costs, 
+# while the lower group represents non-smokers. This suggests that smoker status has a strong effect on medical cost.
+
+# LR Q2
+X = age.reshape(-1, 1)
+y = cost
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+print("X_train shape:", X_train.shape)
+print("X_test shape:", X_test.shape)
+print("y_train shape:", y_train.shape)
+print("y_test shape:", y_test.shape)
+
+# LR Q3
+
+# 1. Create the Linear Regression model
+model = LinearRegression()
+
+# 2. Fit the model
+model.fit(X_train, y_train)
+
+# 3. Predict on the test set
+y_pred = model.predict(X_test)
+
+rmse = np.sqrt(np.mean((y_pred - y_test) ** 2))
+print("RMSE:", rmse)
+
+print("Slope:", model.coef_[0])
+print("Intercept:", model.intercept_)
+print("R² on the test set:", model.score(X_test, y_test))
+
+# The slope represents the estimated increase in annual medical cost for each additional year of age.
+# A positive slope means that, on average, medical costs increase as people get older.
+
+
+# LR Q4
+

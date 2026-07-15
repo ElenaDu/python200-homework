@@ -119,11 +119,51 @@ print("RMSE:", rmse)
 
 print("Slope:", model.coef_[0])
 print("Intercept:", model.intercept_)
-print("R² on the test set:", model.score(X_test, y_test))
+
+r2_age = model.score(X_test, y_test)
+print("R² on the test set:", r2_age)
 
 # The slope represents the estimated increase in annual medical cost for each additional year of age.
 # A positive slope means that, on average, medical costs increase as people get older.
 
 
 # LR Q4
+X_full = np.column_stack([age, smoker])
+y = cost
 
+X_train, X_test, y_train, y_test = train_test_split( X_full, y, test_size=0.2, random_state=42)
+
+# 1. Create the Linear Regression model
+model_full = LinearRegression()
+
+# 2. Fit the model
+model_full.fit(X_train, y_train)
+
+# 3. Predict on the test set
+y_pred = model_full.predict(X_test)
+
+r2_full = model_full.score(X_test, y_test)
+print("R² using age only:", r2_age)
+print("R² using age and smoker:", r2_full)
+
+print("Age coefficient:", model_full.coef_[0])
+print("Smoker coefficient:", model_full.coef_[1])
+
+# Adding the smoker feature greatly improves the model because the test R² increases from about 0.07 to 0.77.
+# The smoker coefficient means that, on average, smokers are predicted to have about $14,538 higher annual medical costs than non-smokers of the same age.
+
+
+# LR Q5
+
+plt.scatter(y_pred, y_test)
+min_value = min(y_pred.min(), y_test.min())
+max_value = max(y_pred.max(), y_test.max())
+plt.plot([min_value, max_value], [min_value, max_value], color="red")
+plt.title("Predicted vs Actual")
+plt.xlabel("Predicted Medical Cost")
+plt.ylabel("Actual Medical Cost")
+plt.savefig("outputs/predicted_vs_actual.png")
+plt.show()
+
+# Points above the diagonal have actual medical costs that are higher than the model predicted, meaning the model underestimated the cost.
+# Points below the diagonal have actual medical costs that are lower than the model predicted, meaning the model overestimated the cost.

@@ -98,8 +98,6 @@ plt.close()
 # Most other features have relatively weak relationships with the final grade.
 
 # Box plot: Study Time vs. G3
-plt.figure(figsize=(8, 6))
-
 df_filtered.boxplot(column="G3", by="studytime")
 
 plt.title("Final Math Grade by Study Time")
@@ -150,9 +148,21 @@ print("R²:", round(r2, 3))
 
 # Select features and target
 feature_cols = [
-    "failures", "Medu", "Fedu", "studytime", "higher",
-    "schoolsup", "internet", "sex", "freetime",
-    "activities", "traveltime"
+    "age",
+    "Medu",
+    "Fedu",
+    "traveltime",
+    "studytime",
+    "failures",
+    "absences",
+    "freetime",
+    "goout",
+    "Walc",
+    "schoolsup",
+    "internet",
+    "higher",
+    "activities",
+    "sex"
 ]
 
 X = df_filtered[feature_cols]
@@ -186,29 +196,26 @@ for name, coef in zip(feature_cols, model.coef_):
     print(name, ":", round(coef, 3))
 
 
-# Adding more features improved the model compared to the baseline.
-# The baseline model had a test R² of 0.089, while this model achieved
-# a test R² of 0.154. This means the model explains about 15% of the
-# variation in final grades, which is an improvement but still leaves
-# most of the variation unexplained.
+# The largest coefficients are schoolsup (-2.263), internet (1.037),
+# failures (-0.800), sex (0.402), goout (-0.313), studytime (0.311),
+# and Walc (-0.268). The negative coefficient for schoolsup is the most
+# surprising because school support is intended to help students.
+# A likely explanation is that students who receive extra support are
+# already struggling academically, so the variable reflects students'
+# existing difficulties rather than the effect of the support itself.
+# The positive coefficient for internet may reflect that students with
+# internet access have better access to learning resources.
 #
-# The negative coefficient for schoolsup is somewhat surprising because
-# school support is intended to help students. A likely explanation is
-# that students receiving extra support are already struggling, so
-# schoolsup reflects students who need additional help rather than the
-# effect of the support itself. The coefficients for activities and
-# freetime are very close to zero, suggesting they have little impact
-# on predicting final grades.
-#
-# The train R² (0.175) and test R² (0.154) are close, indicating that
-# the model generalizes well and does not appear to be overfitting.
+# The train R² (0.235) and test R² (0.263) are very close. In fact, the
+# test R² is slightly higher, suggesting that the model generalizes well
+# and does not appear to be overfitting.
 #
 # If I were deploying this model, I would keep features with larger
-# coefficients, such as failures, schoolsup, internet, higher, and
-# studytime, because they contribute more to the predictions. I would
-# consider dropping activities, freetime, and traveltime because their
-# coefficients are close to zero, suggesting they add little predictive
-# value.
-
+# coefficients, such as schoolsup, internet, failures, sex, goout,
+# studytime, and Walc, because they appear to have the greatest influence
+# on the predictions. I would consider dropping features with coefficients
+# close to zero, such as freetime, activities, higher, absences,
+# traveltime, Medu, and Fedu, since they contribute relatively little
+# to the model.
 
 #Task 6: Evaluate and Summarize

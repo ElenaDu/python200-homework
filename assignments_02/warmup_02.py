@@ -147,8 +147,8 @@ y_pred = model_full.predict(X_test)
 
 r2_full = model_full.score(X_test, y_test)
 
-print("R² using age only (Model 1): ", r2_age)
-print("R² using age and smoker (Model 2): ", r2_full)
+print("R² using age only: ", r2_age)
+print("R² using age and smoker: ", r2_full)
 
 print("Age coefficient:", model_full.coef_[0])
 print("Smoker coefficient:", model_full.coef_[1])

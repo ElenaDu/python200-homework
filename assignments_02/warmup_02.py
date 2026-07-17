@@ -2,9 +2,12 @@
 # Q1
 import numpy as np
 from sklearn.linear_model import LinearRegression
+import os
 
 years  = np.array([1, 2, 3, 5, 7, 10]).reshape(-1, 1)
 salary = np.array([45000, 50000, 60000, 75000, 90000, 120000])
+
+os.makedirs("outputs", exist_ok=True)
 
 # 1. Create the model
 model = LinearRegression()

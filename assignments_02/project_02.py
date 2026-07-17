@@ -1,7 +1,11 @@
 # --- Mini-Project -- Predicting Student Math Performance --- 
 import pandas as pd
+import numpy as np
 import os
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 
 os.makedirs("outputs", exist_ok=True)
 
@@ -111,3 +115,100 @@ plt.close()
 # The box plot shows that students who study more tend to have slightly higher final math grades.
 # However, there is substantial overlap between the groups, indicating that study time alone is not a strong predictor
 # of final performance.
+
+# Use failures to predict G3
+X = df_filtered[["failures"]]
+y = df_filtered["G3"]
+
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train the model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Make predictions
+y_pred = model.predict(X_test)
+
+# Calculate evaluation metrics
+slope = model.coef_[0]
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+r2 = r2_score(y_test, y_pred)
+
+print("Slope:", round(slope, 3))
+print("RMSE:", round(rmse, 3))
+print("R²:", round(r2, 3))
+
+# The slope of -1.428 means that each additional previous failure is associated with about a 1.4-point decrease in the predicted final grade.
+# The RMSE of 2.962 means the model's predictions are typically off by about 3 grade points on a 0–20 grading scale.
+# The R² value of 0.089 is  about what I expected because the exploratory data analysis showed only a moderate relationship between failures and the final grade.
+
+
+# Task 5: Build the Full Model
+
+# Select features and target
+feature_cols = [
+    "failures", "Medu", "Fedu", "studytime", "higher",
+    "schoolsup", "internet", "sex", "freetime",
+    "activities", "traveltime"
+]
+
+X = df_filtered[feature_cols]
+y = df_filtered["G3"]
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train the model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Make predictions
+y_train_pred = model.predict(X_train)
+y_test_pred = model.predict(X_test)
+
+# Evaluate the model
+train_r2 = r2_score(y_train, y_train_pred)
+test_r2 = r2_score(y_test, y_test_pred)
+rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
+
+# Print results
+print("Train R²:", round(train_r2, 3))
+print("Test R²:", round(test_r2, 3))
+print("RMSE:", round(rmse, 3))
+
+print("\nFeature Coefficients:")
+for name, coef in zip(feature_cols, model.coef_):
+    print(name, ":", round(coef, 3))
+
+
+# Adding more features improved the model compared to the baseline.
+# The baseline model had a test R² of 0.089, while this model achieved
+# a test R² of 0.154. This means the model explains about 15% of the
+# variation in final grades, which is an improvement but still leaves
+# most of the variation unexplained.
+#
+# The negative coefficient for schoolsup is somewhat surprising because
+# school support is intended to help students. A likely explanation is
+# that students receiving extra support are already struggling, so
+# schoolsup reflects students who need additional help rather than the
+# effect of the support itself. The coefficients for activities and
+# freetime are very close to zero, suggesting they have little impact
+# on predicting final grades.
+#
+# The train R² (0.175) and test R² (0.154) are close, indicating that
+# the model generalizes well and does not appear to be overfitting.
+#
+# If I were deploying this model, I would keep features with larger
+# coefficients, such as failures, schoolsup, internet, higher, and
+# studytime, because they contribute more to the predictions. I would
+# consider dropping activities, freetime, and traveltime because their
+# coefficients are close to zero, suggesting they add little predictive
+# value.
+
+
+#Task 6: Evaluate and Summarize

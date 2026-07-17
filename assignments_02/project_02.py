@@ -219,3 +219,108 @@ for name, coef in zip(feature_cols, model.coef_):
 # to the model.
 
 #Task 6: Evaluate and Summarize
+plt.figure(figsize=(6, 6))
+
+plt.scatter(y_test_pred, y_test)
+
+# Diagonal reference line (perfect predictions)
+min_val = min(y_test.min(), y_test_pred.min())
+max_val = max(y_test.max(), y_test_pred.max())
+plt.plot([min_val, max_val], [min_val, max_val], "r--")
+
+plt.title("Predicted vs Actual (Full Model)")
+plt.xlabel("Predicted Grade")
+plt.ylabel("Actual Grade")
+
+plt.tight_layout()
+plt.savefig("outputs/predicted_vs_actual.png")
+plt.show()
+plt.close()
+
+# The model appears to struggle more at the low and high ends of the grade
+# range. Most predictions are concentrated around the middle (roughly 10-14),
+# while the actual grades vary much more. This suggests the model tends to
+# underestimate higher grades and overestimate lower grades. Points above the
+# diagonal represent students whose actual grades were higher than predicted
+# (underestimation), while points below the diagonal represent students whose
+# actual grades were lower than predicted (overestimation).
+
+
+# The filtered dataset contains 357 students, and the test set contains
+# 72 students.
+#
+# The full model achieved an RMSE of 2.664 and an R² of 0.263. This means
+# the model's predictions are typically within about 2.7 grade points of
+# the actual grade on a 0–20 scale. The model explains about 26% of the
+# variation in students' final math grades.
+#
+# The largest positive coefficient is internet (+1.037), suggesting that
+# students with internet access tend to have higher predicted grades. The
+# largest negative coefficient is schoolsup (-2.263), suggesting that
+# students receiving extra school support tend to have lower predicted
+# grades. This likely reflects that students receiving extra support were
+# already struggling academically.
+#
+# One surprising result was the negative coefficient for schoolsup. I
+# expected school support to have a positive relationship with final
+# grades. A likely explanation is that this feature identifies students
+# who were already at greater academic risk rather than measuring the
+# effectiveness of the support itself.
+
+
+
+# Neglected Feature: The Power of G1
+# Add G1 to the full model
+
+feature_cols = [
+    "age",
+    "Medu",
+    "Fedu",
+    "traveltime",
+    "studytime",
+    "failures",
+    "absences",
+    "freetime",
+    "goout",
+    "Walc",
+    "schoolsup",
+    "internet",
+    "higher",
+    "activities",
+    "sex",
+    "G1"
+]
+
+X = df_filtered[feature_cols]
+y = df_filtered["G3"]
+
+# Split the data
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+# Train the model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Make predictions
+y_test_pred = model.predict(X_test)
+
+# Evaluate the model
+test_r2 = r2_score(y_test, y_test_pred)
+
+print("Test R² with G1:", round(test_r2, 3))
+
+# Adding G1 increased the test R² from 0.263 to 0.765, meaning the model
+# explains about 77% of the variation in final grades. However, this does
+# not mean that G1 causes G3. Instead, G1 is an earlier measure of a
+# student's academic performance, so it is naturally a strong predictor
+# of the final grade.
+#
+# This model could be useful for identifying students who may struggle
+# later in the course because a low first-period grade is often associated
+# with a lower final grade. However, educators cannot use G1 to intervene
+# before the first grading period. To identify at-risk students earlier,
+# they would need to rely on other information available at the beginning
+# of the course, such as previous failures, study habits, attendance,
+# family background, or other early indicators.

@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 
-#Task 1: Fetch the Data
+# Task 1: Fetch the Data
 
 url = "https://archive-api.open-meteo.com/v1/archive"
 params = {
@@ -29,4 +29,32 @@ print(df.head())
 # I chose Georgetown, Texas.
 
 
-#Task 2: Look at the Features
+# Task 2: Look at the Features
+
+# Exploring the data
+print("\nSummary statistics:")
+print(df.describe())
+
+print("\nMissing values in each column:")
+print(df.isnull().sum())
+
+# The dataset has no missing values, so no additional actions are needed.
+
+# Find the correlation of each numeric column with temperature_2m_max, sorted
+correlations = df.corr(numeric_only=True)["temperature_2m_max"].sort_values(ascending=False)
+print("\nCorrelations with daily high temperature:")
+print(correlations)
+
+# Plot daily low versus daily high
+import matplotlib.pyplot as plt
+
+plt.scatter(df["temperature_2m_min"], df["temperature_2m_max"])
+plt.title("Daily High vs. Low Temperature in Georgetown, TX")
+plt.xlabel("Daily Low Temperature (°C)")
+plt.ylabel("Daily High Temperature (°C)")
+plt.savefig("outputs/project_02_high_vs_low.png")
+plt.show()
+
+# The plot shows how daily high temperatures generally increase as daily low temperatures increase.
+
+

@@ -66,4 +66,31 @@ print(df["is_summer"].value_counts().sort_index().rename({0: "Non-summer", 1: "S
 
 # I expect is_summer to help predict the daily high because Georgetown, Texas, generally has hotter temperatures in summer than in other seasons
 
+# Task 4: Baseline Model
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
+X = df[["temperature_2m_min"]]
+y = df["temperature_2m_max"]
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
+r2 = model.score(X_test, y_test)
+
+print("\nTask 4: Baseline Model")
+print("Slope:", model.coef_[0])
+print("RMSE:", rmse)
+print("R²:", r2)
+
+# RMSE is in degrees Celsius. It tells us that a typical prediction is off by approximately 2.9°C degrees from the actual daily high.
 

@@ -140,5 +140,41 @@ for name, coef in zip(feature_cols, model.coef_):
 # This means the model performs similarly on the training and test data, with no obvious sign of overfitting.
 
 
+# Task 6: Evaluate and Summarize
+
+plt.scatter(y_test_pred, y_test)
+plt.plot(
+    [y_test.min(), y_test.max()],
+    [y_test.min(), y_test.max()],
+    "r--"
+)
+plt.title("Predicted vs Actual (Full Model) in Georgetown, TX")
+plt.xlabel("Predicted High Temperature (°C)")
+plt.ylabel("Actual High Temperature (°C)")
+plt.savefig("outputs/predicted_vs_actual_high.png")
+plt.show()
+
+# The model's errors appear somewhat larger at the low end of the temperature range.
+# Some cooler days have predictions that are noticeably different from the actual highs, while most predictions at the high end are closer
+# to the diagonal reference line.
+
+#---Summary:---
+# The dataset contains 365 daily weather observations, and the test set contains 73 days (20% of the dataset).
+
+# The full model has a test RMSE of about 2.79°C, meaning its predictions are typically off by roughly 2.8°C from the actual daily high.
+
+# Its test R² is about 0.858, meaning it explains approximately 85.8% of the variation in daily high temperatures in the test set.
+
+# Daily low temperature has the largest effect on the predicted high.
+# Its positive coefficient (+0.941) means higher daily lows are associated with higher predicted daily highs.
+
+# One surprising result is the negative summer coefficient (-0.992), because Georgetown is hotter in summer. Central Texas can also be hot
+# in spring and fall, so the difference between summer and non-summer days may be smaller than expected.
+
+
+
+
+
+
 
 

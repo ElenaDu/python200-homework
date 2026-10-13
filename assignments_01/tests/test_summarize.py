@@ -54,3 +54,8 @@ def test_min_hours(minimum, expected_count, readings):
     summaries = DailyAggregator(min_hours=minimum).summarize(readings)
 
     assert len(summaries) == expected_count
+
+
+# The test_grouping_and_temperatures test caught the bug
+# when max() was accidentally changed to min().
+# FAILED tests/test_summarize.py::test_grouping_and_temperatures - AssertionError: assert 10.0 == 14.0

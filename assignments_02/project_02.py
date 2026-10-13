@@ -57,4 +57,13 @@ plt.show()
 
 # The plot shows how daily high temperatures generally increase as daily low temperatures increase.
 
+# Task 3: Engineer a Feature
+
+df["is_summer"] = df["date"].dt.month.isin([6, 7, 8]).astype(int)
+
+print("\nSummer and non-summer days:")
+print(df["is_summer"].value_counts().sort_index().rename({0: "Non-summer", 1: "Summer"}))
+
+# I expect is_summer to help predict the daily high because Georgetown, Texas, generally has hotter temperatures in summer than in other seasons
+
 

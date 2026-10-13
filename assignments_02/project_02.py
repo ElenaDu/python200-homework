@@ -1,5 +1,11 @@
 import requests
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
 
 # Task 1: Fetch the Data
 
@@ -46,7 +52,6 @@ print("\nCorrelations with daily high temperature:")
 print(correlations)
 
 # Plot daily low versus daily high
-import matplotlib.pyplot as plt
 
 plt.scatter(df["temperature_2m_min"], df["temperature_2m_max"])
 plt.title("Daily High vs. Low Temperature in Georgetown, TX")
@@ -67,10 +72,6 @@ print(df["is_summer"].value_counts().sort_index().rename({0: "Non-summer", 1: "S
 # I expect is_summer to help predict the daily high because Georgetown, Texas, generally has hotter temperatures in summer than in other seasons
 
 # Task 4: Baseline Model
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
-import numpy as np
 
 X = df[["temperature_2m_min"]]
 y = df["temperature_2m_max"]
@@ -93,4 +94,51 @@ print("RMSE:", rmse)
 print("R²:", r2)
 
 # RMSE is in degrees Celsius. It tells us that a typical prediction is off by approximately 2.9°C degrees from the actual daily high.
+
+# Task 5: Full Model
+
+feature_cols = ["temperature_2m_min", "precipitation_sum", "wind_speed_10m_max", "is_summer"]
+                
+X = df[feature_cols].values
+y = df["temperature_2m_max"].values
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42
+)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_train_pred = model.predict(X_train)
+y_test_pred = model.predict(X_test)
+
+train_r2 = model.score(X_train, y_train)
+test_r2 = model.score(X_test, y_test)
+rmse = np.sqrt(mean_squared_error(y_test, y_test_pred))
+
+print("\nTask 5: Full Model")
+print("Train R²:", train_r2)
+print("Test R²:", test_r2)
+print("Test RMSE:", rmse)
+
+# Compare the full model with the Task 4 baseline.
+baseline_test_r2 = 0.8469780287323851
+print("Baseline test R²:", baseline_test_r2)
+print("Change in test R²:", test_r2 - baseline_test_r2)
+
+print("\nFeature coefficients:")
+for name, coef in zip(feature_cols, model.coef_):
+    print(f"{name:22s}: {coef:+.3f}")
+
+# The daily low temperature and precipitation/wind have different effects:
+# higher daily lows raise the predicted high, while more precipitation and higher wind speeds lower it slightly.
+
+# The negative summer coefficient is surprising because Georgetown is hotter in summer.
+# However, Central Texas is also hot in spring and fall, so the difference between summer and non-summer days may be smaller than expected.
+
+# Train R² (0.849) and test R² (0.858) are very close.
+# This means the model performs similarly on the training and test data, with no obvious sign of overfitting.
+
+
+
 

@@ -76,3 +76,60 @@ print(accuracy_score(y_test_q3, y_pred))
 # The pipeline automatically fits preprocessing on the training data and applies the same transformations before prediction.
 
 
+# --- KNN ---
+
+# Q1
+
+knn_pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("classifier", KNeighborsClassifier(n_neighbors=5))
+])
+
+knn_pipeline.fit(X_train, y_train)
+
+y_pred_knn = knn_pipeline.predict(X_test)
+
+print(accuracy_score(y_test, y_pred_knn))
+print(classification_report(y_test, y_pred_knn))
+
+# Q2
+
+k_values = [1, 3, 5, 7, 9, 11, 15, 21]
+
+for k in k_values:
+    knn_pipeline = Pipeline([
+        ("scaler", StandardScaler()),
+        ("classifier", KNeighborsClassifier(n_neighbors=k))
+    ])
+
+    cv_scores = cross_val_score(
+        knn_pipeline, X_train, y_train, cv=5, scoring="accuracy"
+    )
+
+    print(f"k = {k}, mean CV accuracy = {cv_scores.mean():.4f}")
+
+# I would choose k = 11 because it has the highest mean 5-fold cross-validation accuracy (94.17%).
+
+
+# Q3
+
+knn_raw_model = KNeighborsClassifier(n_neighbors=5)
+knn_raw_model.fit(X_train, y_train)
+
+raw_predictions = knn_raw_model.predict(X_test)
+raw_accuracy = accuracy_score(y_test, raw_predictions)
+
+knn_scaled_pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("classifier", KNeighborsClassifier(n_neighbors=5))
+])
+
+knn_scaled_pipeline.fit(X_train, y_train)
+
+scaled_predictions = knn_scaled_pipeline.predict(X_test)
+scaled_accuracy = accuracy_score(y_test, scaled_predictions)
+
+print(f"Accuracy without scaling: {raw_accuracy:.4f}")
+print(f"Accuracy with scaling: {scaled_accuracy:.4f}")
+
+# Scaling improved accuracy because KNN uses distances, and scaling prevents features with larger numerical ranges from dominating those distances.

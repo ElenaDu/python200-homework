@@ -12,6 +12,11 @@ from sklearn.metrics import (
     f1_score,
     classification_report,
 )
+import json
+import os
+import platform
+import joblib
+import sklearn
 
 # Task 1: Fetch the Data
 
@@ -199,3 +204,35 @@ for index in range(len(feature_names)):
 # KNN had 96% recall for good days, compared with 59% for Logistic Regression, so it missed fewer good running days.
 # I would deploy KNN because it had higher accuracy and recall for good days on this test set. 
 # Both models are relatively small and fast, but Logistic Regression is easier to interpret.
+
+
+# Task 6: Save the Model
+
+os.makedirs("models", exist_ok=True)
+
+# Save the fitted KNN pipeline.
+joblib.dump(knn_pipeline, "models/weather_classifier.pkl")
+
+knn_predictions = knn_pipeline.predict(X_test)
+test_accuracy = accuracy_score(y_test, knn_predictions)
+test_f1 = f1_score(y_test, knn_predictions, pos_label=1)
+
+# Save model metadata.
+metadata = {
+    "python_version": platform.python_version(),
+    "scikit_learn_version": sklearn.__version__,
+    "feature_names": list(X.columns),
+    "label_rule": (
+        "1 = good if maximum temperature is between 7 and 30°C, "
+        "minimum temperature is at least 0°C, precipitation is under "
+        "3 mm, and maximum wind speed is under 30 km/h; otherwise 0 = skip."
+    ),
+    "city": "Georgetown, Texas",
+    "test_accuracy": test_accuracy,
+    "test_f1": test_f1,
+}
+
+with open("models/weather_classifier_metadata.json", "w") as metadata_file:
+    json.dump(metadata, metadata_file, indent=4)
+
+print("Model and metadata saved successfully.")

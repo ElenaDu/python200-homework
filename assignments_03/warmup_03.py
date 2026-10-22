@@ -133,3 +133,47 @@ print(f"Accuracy without scaling: {raw_accuracy:.4f}")
 print(f"Accuracy with scaling: {scaled_accuracy:.4f}")
 
 # Scaling improved accuracy because KNN uses distances, and scaling prevents features with larger numerical ranges from dominating those distances.
+
+
+# --- Logistic Regression ---
+# Q1
+
+logistic_regression_pipeline = Pipeline([
+    ("scaler", StandardScaler()),
+    ("classifier", LogisticRegression(max_iter=1000))
+])
+
+logistic_regression_pipeline.fit(X_train, y_train)
+
+logistic_predictions = logistic_regression_pipeline.predict(X_test)
+
+print("Accuracy:", accuracy_score(y_test, logistic_predictions))
+print("Precision:", precision_score(y_test, logistic_predictions, pos_label=1))
+print("Recall:", recall_score(y_test, logistic_predictions, pos_label=1))
+print("F1:", f1_score(y_test, logistic_predictions, pos_label=1))
+
+# The logistic regression model achieved 86.67% accuracy.
+# Precision was 85.71%, recall was 88.52%, and F1 was 87.10%.
+# The model correctly predicts most good-for-running days, with slightly more false positives than false negatives.
+
+
+# Q2
+
+feature_names = X_train.columns
+feature_coefficients = logistic_regression_pipeline.named_steps["classifier"].coef_[0]
+
+for index in range(len(feature_names)):
+    print(f"{feature_names[index]}: {feature_coefficients[index]:.4f}")
+
+# Negative coefficients push the prediction toward "skip" (class 0).
+# Wind speed and precipitation push most strongly toward "skip" for this example.
+# This matches my intuition because windy and rainy weather can make running less comfortable.
+
+# Q3
+good_probabilities = logistic_regression_pipeline.predict_proba(X_test)
+
+for index in range(5):
+    print(f"Day {index + 1}: {good_probabilities[index][1]:.2f}")
+
+# A probability near 0.5 means the model is less certain whether the day is good or not.
+

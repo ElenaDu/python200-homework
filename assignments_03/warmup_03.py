@@ -211,5 +211,5 @@ assert (loaded.predict(X_test) == logistic_regression_pipeline.predict(X_test)).
 
 print("Predictions match.")
 
-## Saving only LogisticRegression without the scaler would mean the input data
+#Saving only LogisticRegression without the scaler would mean the input data
 # would not be scaled before prediction, which could lead to different results.

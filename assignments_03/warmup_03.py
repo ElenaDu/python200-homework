@@ -177,3 +177,39 @@ for index in range(5):
 
 # A probability near 0.5 means the model is less certain whether the day is good or not.
 
+
+# --- Evaluation ---
+# Q1
+
+confusion_matrix_values = confusion_matrix(y_test, logistic_predictions)
+
+confusion_matrix_display = ConfusionMatrixDisplay(
+    confusion_matrix=confusion_matrix_values,
+    display_labels=["skip", "good"]
+)
+
+confusion_matrix_display.plot()
+
+plt.savefig("outputs/logreg_confusion_matrix.png", bbox_inches="tight")
+plt.show()
+
+# The model made 9 false positives and 7 false negatives.
+# False positives may matter more because users could be encouraged to run when the weather is unsuitable.
+
+
+# --- Joblib ---
+# Q1
+import os
+
+os.makedirs("models", exist_ok=True)
+
+joblib.dump(logistic_regression_pipeline, "models/warmup_model.pkl")
+
+loaded = joblib.load("models/warmup_model.pkl")
+
+assert (loaded.predict(X_test) == logistic_regression_pipeline.predict(X_test)).all()
+
+print("Predictions match.")
+
+## Saving only LogisticRegression without the scaler would mean the input data
+# would not be scaled before prediction, which could lead to different results.

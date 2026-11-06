@@ -60,6 +60,8 @@ print(day2.summary())
 
 # The @dataclass decorator automatically generates __init__(), so we do not have to write the constructor ourselves.
 
+
+
 # Question 3
 
 import pytest

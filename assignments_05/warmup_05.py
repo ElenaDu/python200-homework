@@ -155,3 +155,239 @@ print("Assistant response:", response.choices[0].message.content)
 # Although the API is stateless and does not remember previous calls, it can use the context
 # provided with each new request.
 
+
+
+# --- Prompt Engineering ---
+
+# Prompt Q1
+
+reviews = [
+    "The onboarding process was smooth and the team was welcoming.",
+    "The software crashes constantly and support never responds.",
+    "Great price, but the documentation is nearly impossible to follow."
+]
+
+prompt = f"""
+Classify the sentiment of each review as positive, negative, or mixed.
+
+Reviews:
+{reviews}
+
+Return the sentiment for each review, labeled by review number.
+"""
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ]
+)
+
+print("Zero-Shot Sentiment Classification:")
+print(response.choices[0].message.content)
+
+# Prompt Q2
+
+reviews = [
+    "The onboarding process was smooth and the team was welcoming.",
+    "The software crashes constantly and support never responds.",
+    "Great price, but the documentation is nearly impossible to follow."
+]
+
+prompt = f"""
+Classify the sentiment of each review below as positive, negative, or mixed.
+
+Example:
+Review: "Fast shipping but the item arrived damaged."
+Sentiment: mixed
+
+Now classify these reviews:
+{reviews}
+
+Return each classification labeled with the review number.
+"""
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ]
+)
+
+print("One-Shot Sentiment Classification:")
+print(response.choices[0].message.content)
+
+# Observation:
+# Adding one example changed the output format. In Q1, the model returned a simple numbered list, while in Q2, it included each
+# review followed by its sentiment label.
+# Both approaches produced correct classifications, but the example helped guide the output into a more structured and consistent format.
+
+
+# Prompt Q3
+
+reviews = [
+    "The onboarding process was smooth and the team was welcoming.",
+    "The software crashes constantly and support never responds.",
+    "Great price, but the documentation is nearly impossible to follow."
+]
+
+prompt = f"""
+Classify the sentiment of each review as positive, negative, or mixed.
+
+Examples:
+
+Review: "The product is easy to use and works perfectly."
+Sentiment: positive
+
+Review: "The app is slow, unreliable, and full of bugs."
+Sentiment: negative
+
+Review: "The customer service was excellent, but the product was disappointing."
+Sentiment: mixed
+
+Now classify these reviews:
+
+{reviews}
+
+Return each classification labeled with the review number.
+"""
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ]
+)
+
+print("Few-Shot Sentiment Classification:")
+print(response.choices[0].message.content)
+
+# Comparison:
+# Zero-shot prompting is useful for simple tasks where instructions alone are enough. 
+# One-shot prompting is helpful when the model needs an example of the expected format or style.
+# Few-shot prompting is useful for more complex tasks where multiple examples can help the model recognize patterns and produce more consistent results.
+
+
+# Prompt Q4
+
+prompt = """
+Solve the following problem. Show your reasoning step by step
+before giving your final answer. Clearly label the final answer.
+
+A data engineer earns $85,000 per year. She gets a 12% raise,
+then 6 months later takes a new job that pays $7,500 more per
+year than her post-raise salary.
+What is her final annual salary?
+"""
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ]
+)
+
+print("Chain of Thought Response:")
+print(response.choices[0].message.content)
+
+# Observation:
+# Asking the model to solve a problem step by step helps it break a complex task into smaller, manageable steps.
+# This makes the calculation process easier to follow and verify, and can help reduce errors in multi-step problems.
+
+
+# Prompt Q5
+
+import json
+
+review = "I've been using this tool for three months. It handles large datasets well, \
+but the UI is clunky and the export options are limited."
+
+prompt = f"""
+Analyze the following review:
+
+{review}
+
+Return only valid JSON with these three keys:
+- "sentiment": positive, negative, or mixed
+- "confidence": a number between 0 and 1
+- "reason": one sentence explaining the sentiment
+
+Do not include Markdown formatting or any text outside the JSON.
+"""
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ]
+)
+
+raw_response = response.choices[0].message.content
+
+print("Raw JSON response:")
+print(raw_response)
+
+try:
+    result = json.loads(raw_response)
+
+    print("\nParsed Results:")
+    print("Sentiment:", result["sentiment"])
+    print("Confidence:", result["confidence"])
+    print("Reason:", result["reason"])
+
+except json.JSONDecodeError:
+    print("\nInvalid JSON. Raw response:")
+    print(raw_response)
+
+
+# Prompt Q6
+
+user_text = "First boil a pot of water. Once boiling, add a handful of salt and the \
+pasta. Cook for 8-10 minutes until al dente. Drain and toss with your sauce of choice."
+
+prompt = f"""
+You will be given text inside triple backticks.
+If it contains step-by-step instructions, rewrite them as a numbered list.
+If it does not contain instructions, respond with exactly: "No steps provided."
+
+```{user_text}```
+"""
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ]
+)
+
+print("Instruction Text Response:")
+print(response.choices[0].message.content)
+
+
+# Second prompt: regular prose, not instructions
+
+user_text = "The sun was setting behind the mountains. The sky turned orange and pink, and birds were returning to their nests."
+
+prompt = f"""
+You will be given text inside triple backticks.
+If it contains step-by-step instructions, rewrite them as a numbered list.
+If it does not contain instructions, respond with exactly: "No steps provided."
+
+```{user_text}```
+"""
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ]
+)
+
+print("\nRegular Prose Response:")
+print(response.choices[0].message.content)
+
+
+# Observation:
+# Delimiters help prevent confusion between instructions and input data.
+# They clearly mark the beginning and end of the text the model should process,
+# reducing the risk of treating instructions inside the input as actual prompts.

@@ -85,3 +85,73 @@ print("Response:", response.choices[0].message.content)
 # In a real application, max_tokens is useful for controlling response length, managing API costs, and preventing the model
 # from generating unnecessarily long answers.
 
+
+# --- System Messages and Personas ---
+
+# System Q1
+
+messages = [
+    {
+        "role": "system",
+        "content": "You are a patient, encouraging Python tutor. You always explain things simply and end with a word of encouragement."
+    },
+    {
+        "role": "user",
+        "content": "I don't understand what a list comprehension is."
+    }
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=messages
+)
+
+print("Patient Python tutor:")
+print(response.choices[0].message.content)
+
+messages = [
+    {
+        "role": "system",
+        "content": "You are a dramatic pirate who teaches Python. Explain programming concepts using pirate language, funny comparisons, and occasional pirate expressions. Keep explanations accurate and easy to understand."
+    },
+    {
+        "role": "user",
+        "content": "I don't understand what a list comprehension is."
+    }
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=messages
+)
+
+print("\nPirate Python instructor:")
+print(response.choices[0].message.content)
+
+# Observation:
+# Changing the system message significantly changed the model's personality and communication style.
+# The pirate instructor used humor, pirate expressions, and creative analogies to explain the same concept.
+# However, although the technical explanation and Python examples remained accurate, the response was not as easy to follow.
+
+
+# System Q2
+
+messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "My name is Jordan and I'm learning Python."},
+    {"role": "assistant", "content": "Nice to meet you, Jordan! Python is a great choice. What would you like to work on?"},
+    {"role": "user", "content": "Can you remind me what my name is?"}
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=messages
+)
+
+print("Assistant response:", response.choices[0].message.content)
+
+# Observation:
+# The model knows Jordan's name because the conversation history was included in the messages list.
+# Although the API is stateless and does not remember previous calls, it can use the context
+# provided with each new request.
+

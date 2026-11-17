@@ -391,3 +391,45 @@ print(response.choices[0].message.content)
 # Delimiters help prevent confusion between instructions and input data.
 # They clearly mark the beginning and end of the text the model should process,
 # reducing the risk of treating instructions inside the input as actual prompts.
+
+
+# --- Local Models with Ollama ---
+# Ollama Q1 
+
+# OpenAI API response:
+prompt = "Explain what a large language model is in two sentences."
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": prompt}
+    ]
+)
+
+print("OpenAI API response:")
+print(response.choices[0].message.content)
+
+# Ollama response:
+# A large language model is an AI system trained on vast amounts of text to understand and generate human-like language, 
+# enabling tasks like writing or answering questions with accuracy and fluency.
+# It processes and interprets complex patterns in the training data to perform tasks like comprehension, 
+# creativity, and natural language generation.  
+#
+# OpenAI API response:
+#
+# A large language model is a type of artificial intelligence that uses deep
+# learning techniques to understand and generate human language by processing
+# vast amounts of text data. These models are designed to predict the next word
+# in a sequence, enabling them to perform a variety of language tasks such as
+# translation, summarization, and conversation.
+#
+# Comparison:
+# Both models explained how large language models understand and generate human-like text and described some of their applications.
+# The Ollama response focused on understanding patterns in training data and generating language,
+# while the OpenAI response provided more detail about deep learning and next-word prediction.
+# 
+# Advantage of a local model:
+# It can run on my own computer without sending prompts to an external API or paying per-token API fees.
+# 
+# Disadvantage of a local model:
+# Its performance and response quality may be more limited by the computer's hardware and the size of the model.

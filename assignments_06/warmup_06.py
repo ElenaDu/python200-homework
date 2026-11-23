@@ -132,5 +132,32 @@ results = simple_keyword_retrieval(query, documents, verbose=True)
 
 print("\nSelected document:", results[0][0])
 
+# loyalty.txt was selected because it had the same keyword overlap score as hours.txt and hiring.txt.
+#  Since the results are sorted in reverse alphabetical order, loyalty.txt was selected first.
 
 
+# Question 2
+query = "Do you have anything without caffeine?"
+
+results = simple_keyword_retrieval(query, documents, verbose=True)
+
+print("\nSelected document:", results[0][0])
+
+# No relevant document was found because none of the query keywords matched the document contents. 
+# Keyword RAG could not identify the menu as potentially relevant.
+#  Semantic retrieval would do better because it understands the meaning of words and related concepts.
+
+
+# Question 3
+
+query = "How do I sign up for rewards?"
+
+# Prediction: I think loyalty.txt will be selected because the question
+# is about signing up for rewards, which relates to the loyalty program.
+
+results = simple_keyword_retrieval(query, documents, verbose=True)
+
+print("\nSelected document:", results[0][0])
+
+# My prediction was incorrect. The function did not find any matching keywords because the query and loyalty.txt use different words.
+# Keyword retrieval only matches exact words, not their meanings.

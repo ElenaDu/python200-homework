@@ -122,16 +122,20 @@ for i, source_node in enumerate(response.source_nodes, 1):
     print(f"Similarity score: {source_node.score}")
     print(f"Chunk text: {source_node.node.get_content()[:200]}")
 
-# I asked "What is the most common password?" because the question is ambiguous and the answer is not available in the Groundwork
-# documents.
+# Observations: 
+# I asked "What is the most common password?" because the question is ambiguous and the answer is not included in the documents.
+# The model interpreted my question as asking about the coffee shop's Wi-Fi password. 
+# It retrieved faq.txt, which says that customers can ask a barista for the current password. However, the actual password is not provided in the documents.
+# The similarity scores were low. The first retrieved source had a score of only 0.158. 
+# Despite the low scores, the model gave a confident answer instead of explaining that it did not
+# have enough information.
 #
-# The model interpreted the question as asking about the coffee shop's Wi-Fi password.
-# It retrieved faq.txt, which mentions that customers can ask a barista for the current Wi-Fi password.
-# However, the actual password is not provided in the documents.
+# This shows that an AI model can make assumptions and sound confident even when it does not have enough information.
+# We should not automatically trust its answers.
 #
-# The similarity scores were low, especially for the first source (0.158).
-# Despite the weak retrieval results, the model provided a confident answer instead of explicitly saying that the
-# information was unavailable.
+# To improve the system, I would add a minimum similarity threshold and instruct the model to say when information
+# is not found in the documents. This would help reduce unsupported answers and assumptions.
+# 
 
 
 # Step 6: Reflection

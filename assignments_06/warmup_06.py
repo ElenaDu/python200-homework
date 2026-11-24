@@ -117,7 +117,7 @@ def simple_keyword_retrieval(query, documents, verbose=True):
         return [("None found", "No relevant content.")]
 
 
-# Keyword Question 1
+# Question 1
 
 query = "What are your hours on weekends?"
 
@@ -161,3 +161,29 @@ print("\nSelected document:", results[0][0])
 
 # My prediction was incorrect. The function did not find any matching keywords because the query and loyalty.txt use different words.
 # Keyword retrieval only matches exact words, not their meanings.
+
+
+# --- Semantic ---
+
+# Question 1
+#
+# 1. A vector embedding is a numerical representation of text that captures its meaning. 
+#    It allows computers to compare texts based on their meaning rather than just matching individual words.
+#   
+# 2. The chunk with a cosine similarity score of 0.85 is more relevant because it is closer in meaning to the query.
+#    A higher score means the texts have a stronger semantic relationship.
+#    
+# 3. Semantic search can find relevant information even when the exact words are different because it looks at the meaning and context
+#    of the text, rather than relying on exact keyword matches.
+
+
+# Question 2
+#
+# | Feature                 | Keyword RAG                    | Semantic RAG                     |
+# |-------------------------|--------------------------------|----------------------------------|
+# | What is compared?       | Exact word overlap             | Meaning of text using embeddings |
+# | What is retrieved?      | Full document                  | Most relevant text chunks        |
+# | Can it handle synonyms? | No                             | Yes                              |
+# | Storage format          | Plain text dictionary          | Vector database                  |
+# | Relevance score         | Number of overlapping keywords | Cosine similarity score          |
+
